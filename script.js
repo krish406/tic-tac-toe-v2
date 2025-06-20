@@ -25,7 +25,8 @@ const Board = (function(){
         let row = Math.floor((location - 1) / 3);
         let column = (location - 1) % 3;
         board[row][column] = this.symbol;
-        available_locations[location] = ' ';
+        let index = available_locations.indexOf(location);
+        available_locations.splice(index, 1);
         drawBoard();
     }
 
@@ -33,9 +34,10 @@ const Board = (function(){
         available_locations.forEach(value => {
             if(value != ' '){
                 process.stdout.write(value + ' ');
-                console.log();
             }
         });
+        console.log();
+        return available_locations;
     }
 
     const checkBoard = function(){
@@ -67,14 +69,14 @@ const Board = (function(){
             }
         }
 
-        return false;
+        return true;
     }
 
     return {
         drawBoard, 
         editBoard, 
         checkBoard, 
-        showRemaining
+        showRemaining,
     }
 })();
 
@@ -93,43 +95,51 @@ const Player = function(name, symbol){
     return {name, symbol, editBoard, getWinState, toggleWinState}
 };
 
-// const gameController = function(playerOne, playerTwo){
-//     let playerWon = false;
-//     let roundCounter = 1;
-//     let turn = "";
-//     const checkBoard = Board.checkBoard;
+const gameController = (function(){
+    let playerWon = false;
+    let roundCounter = 1;
+    let turn = "";
+    const checkBoard = Board.checkBoard;
+
+    let playerOne = Player('Krish', 'O');
+    let playerTwo = Player('Yash', 'X');
     
-//     const choosePlayer = function(){
-//         if(roundCounter % 2 == 1){
-//             turn = "Player One";
-//         }
-//         else{
-//             turn = "Player Two";
-//         }
-//     }
+    const choosePlayer = function(){
+        if(roundCounter % 2 == 1){
+            turn = "Player One";
+        }
+        else{
+            turn = "Player Two";
+        }
+    }
 
-//     const playGame = function(){
-//         while(!playerWon){
-//             choosePlayer();
-//             if(turn === "Player One"){
-//                 playerOne.editBoard();
-//             }
+    const playGame = function(){
+        while(!playerWon){
+            choosePlayer();
+            let locations = Board.showRemaining();
+            const random = Math.floor(Math.random() * locations.length);
+            console.log(random);
+            console.log(locations[random]);
 
-//             else if(turn === "Player Two"){
-//                 playerTwo.editBoard();
-//             }
+            if(turn === "Player One"){
+                playerOne.editBoard(locations[random]);
+            }
 
-//             if(checkBoard()){
-//                 playerWon = true;
-//                 break;
-//             };
+            else if(turn === "Player Two"){
+                playerTwo.editBoard(locations[random]);
+            }
+            
+            if(checkBoard()){
+                playerWon = true;
+                break;
+            };
 
-//             roundCounter++;
-//         }
-//     }
-// }
+            roundCounter++;
+        }
+    }
+    return {
+        playGame
+    }
+})();
 
-let playerOne = Player('Krish', 'O');
-let playerTwo = Player('Yash', 'X');
-
-console.log(Board.checkBoard());
+gameController.playGame();
