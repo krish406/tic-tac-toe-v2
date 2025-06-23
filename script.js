@@ -1,43 +1,26 @@
 const Board = (function(){
     let board = [[' ',' ',' '],[' ',' ',' '],[' ',' ',' ']];
     let available_locations = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    let currentSymbol = '';
 
-    const drawBoard = function(){
-        board.forEach((row, index) => {
-            row.forEach((cell, index) => {
-                if (index < 2){
-                    process.stdout.write(cell + '|');
+    const changeSymbol = function(){
+        currentSymbol = this.symbol;
+    }
+    
+    const createBoard = function(){
+        let squares = document.querySelectorAll('.square');
+        squares.forEach((square, index) => {
+            square.addEventListener('click', () => {
+                let indexToFind = available_locations.indexOf(index + 1);
+                if (indexToFind > -1){
+                    square.textContent = available_locations[indexToFind];
+                    available_locations.splice(indexToFind, 1);
                 }
-                else if (index == 2){
-                    process.stdout.write(cell);
+                else{
+                    console.log('index has been taken!!');
                 }
             });
-            if (index < 2){
-                console.log('');
-                console.log('-+-+-')
-            }
-        });
-        console.log();
-        console.log();
-    }
-
-    const editBoard = function(location){
-        let row = Math.floor((location - 1) / 3);
-        let column = (location - 1) % 3;
-        board[row][column] = this.symbol;
-        let index = available_locations.indexOf(location);
-        available_locations.splice(index, 1);
-        drawBoard();
-    }
-
-    const showRemaining = function(){
-        available_locations.forEach(value => {
-            if(value != ' '){
-                process.stdout.write(value + ' ');
-            }
-        });
-        console.log();
-        return available_locations;
+        })
     }
 
     const checkBoard = function(){
@@ -73,15 +56,13 @@ const Board = (function(){
     }
 
     return {
-        drawBoard, 
-        editBoard, 
+        createBoard, 
         checkBoard, 
-        showRemaining,
+        changeSymbol
     }
 })();
 
 const Player = function(name, symbol){
-    const editBoard = Board.editBoard;
     let winState = false;
     
     const getWinState = () => {
@@ -92,13 +73,13 @@ const Player = function(name, symbol){
         winState = !winState;
     }
 
-    return {name, symbol, editBoard, getWinState, toggleWinState}
+    return {name, symbol, getWinState, toggleWinState}
 };
 
 const gameController = (function(){
     let playerWon = false;
     let roundCounter = 1;
-    let turn = "";
+    let turn = ""; //Placeholder
     const checkBoard = Board.checkBoard;
 
     let playerOne = Player('Krish', 'O');
@@ -116,11 +97,7 @@ const gameController = (function(){
     const playGame = function(){
         while(!playerWon){
             choosePlayer();
-            let locations = Board.showRemaining();
-            const random = Math.floor(Math.random() * locations.length);
-            console.log(random);
-            console.log(locations[random]);
-
+    
             if(turn === "Player One"){
                 playerOne.editBoard(locations[random]);
             }
@@ -142,4 +119,4 @@ const gameController = (function(){
     }
 })();
 
-gameController.playGame();
+Board.createBoard();
