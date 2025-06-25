@@ -1,5 +1,5 @@
 const Board = (function(){
-    let board = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
+    let board = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']];
     let available_locations = [1, 2, 3, 4, 5, 6, 7, 8, 9];
     let currentSymbol = '';
 
@@ -64,15 +64,7 @@ const Board = (function(){
             return true;
         }
 
-        for(let i = 0; i < 3; i++){
-            for(j = 0; j < 3; j++){
-                if(board[i][j] === ' '){
-                    return false;
-                }
-            }
-        }
-
-        return true;
+        return false
     }
 
     return {
@@ -106,6 +98,7 @@ const gameController = (function(){
     let playerTwo = new Player('S', '0');
     let squares = document.querySelectorAll('.square');
     let winState = false;
+    let currentPlayer;
 
     const changePlayer = function(){
         if(round % 2 == 0){
@@ -129,13 +122,15 @@ const gameController = (function(){
                         let column = index % 3;
                         Board.modifyBoard(row, column);
                         
-                        if (checkWinState() && Board.empty()){
+                        //if a winning arrangement exists
+                        if (checkWinState()){
                             let footer = document.createElement('p');
                             footer.textContent = `${currentPlayer.name} Wins!!`
                             document.body.appendChild(footer);
                         }
 
-                        else if(checkWinState()){
+                        //if there are no available spaces
+                        else if(!Board.empty()){
                             let footer = document.createElement('p');
                             footer.textContent = `Tie!!`;
                             document.body.appendChild(footer);
