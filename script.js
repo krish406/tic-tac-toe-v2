@@ -13,6 +13,8 @@ const Board = (function(){
         available_locations.splice(index, 1);
     }
 
+    //if the board has an open space, return true (an empty space exists)
+    //if the board is full return false
     const empty = function(){
         for(let i = 0; i < 3; i++){
             for(let j = 0; j < 3; j++){
@@ -94,54 +96,59 @@ const Player = function(name, symbol){
 
 const gameController = (function(){
     let round = 0;
-    let playerOne = new Player('K', 'X');
-    let playerTwo = new Player('S', '0');
-    let squares = document.querySelectorAll('.square');
     let winState = false;
-    let currentPlayer;
+    let playerOne = new Player('Krish', 'X');
+    let playerTwo = new Player('Cristian', '0');
+    let squares = document.querySelectorAll('.square');
+    let game_text = document.querySelector('.gameplay-text');
+    let currentPlayer = playerOne;
 
     const changePlayer = function(){
         if(round % 2 == 0){
             currentPlayer = playerOne;
         }
+
         else{
             currentPlayer = playerTwo;
         }
     }
 
     const createBoard = function(){
-        Board.changeSymbol(playerOne.symbol);
+        game_text.textContent = `${currentPlayer.name}'s turn`;
+        Board.changeSymbol(currentPlayer.symbol);
         
         squares.forEach((square, index) => {
             square.addEventListener('click', () => {
                 if (!winState){
+                    //find the square that was just clicked
                     let indexToFind = Board.locate(index + 1)
+                    
+                    //if the square hasn't been taken
                     if(indexToFind > -1){
+                        
+                        //modify the board at the specific location
                         Board.board_splice(indexToFind)
                         let row = Math.floor(index / 3);
                         let column = index % 3;
                         Board.modifyBoard(row, column);
                         
-                        //if a winning arrangement exists
-                        if (checkWinState()){
-                            let footer = document.createElement('p');
-                            footer.textContent = `${currentPlayer.name} Wins!!`
-                            document.body.appendChild(footer);
+                        //after this modification, check if there is a win or tie
+                        if(checkWinState()){
+                            game_text.textContent = `${currentPlayer.name} Wins!!`
                         }
 
-                        //if there are no available spaces
                         else if(!Board.empty()){
-                            let footer = document.createElement('p');
-                            footer.textContent = `Tie!!`;
-                            document.body.appendChild(footer);
+                            game_text.textContent = `Tie!!`;
                         }
 
+                        //if there is no win or tie then we switch players
                         else{
-                            console.log('hello');
                             round++;
                             changePlayer();
+                            game_text.textContent = `${currentPlayer.name}'s turn`;
                             Board.changeSymbol(currentPlayer.symbol);
                         }
+
                     }
 
                     else{
@@ -153,7 +160,7 @@ const gameController = (function(){
     }
 
     const checkWinState = function(){
-        if (Board.checkBoard()){
+        if (Board.checkBoard() || !Board.empty){
             winState = true;
         }
         return Board.checkBoard();
