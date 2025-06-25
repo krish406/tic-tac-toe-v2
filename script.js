@@ -1,26 +1,46 @@
 const Board = (function(){
-    let board = [[' ',' ',' '],[' ',' ',' '],[' ',' ',' ']];
+    let board = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
     let available_locations = [1, 2, 3, 4, 5, 6, 7, 8, 9];
     let currentSymbol = '';
 
-    const changeSymbol = function(){
-        currentSymbol = this.symbol;
+    let squares = document.querySelectorAll('.square');
+
+    const locate = function(index){
+        return available_locations.indexOf(index);
+    }
+
+    const board_splice = function(index){
+        available_locations.splice(index, 1);
+    }
+
+    const empty = function(){
+        for(let i = 0; i < 3; i++){
+            for(let j = 0; j < 3; j++){
+                if(board[i][j] === ' '){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    const changeSymbol = function(symbol){
+        console.log(symbol);
+        currentSymbol = symbol;
     }
     
-    const createBoard = function(){
-        let squares = document.querySelectorAll('.square');
+    const modifyBoard = function(row, column){
+        board[row][column] = currentSymbol;
+        console.log(board);
+        RenderBoard();
+    }
+
+    const RenderBoard = function(){
         squares.forEach((square, index) => {
-            square.addEventListener('click', () => {
-                let indexToFind = available_locations.indexOf(index + 1);
-                if (indexToFind > -1){
-                    square.textContent = available_locations[indexToFind];
-                    available_locations.splice(indexToFind, 1);
-                }
-                else{
-                    console.log('index has been taken!!');
-                }
-            });
-        })
+            let row = Math.floor(index / 3);
+            let column = index % 3;
+            square.textContent = board[row][column];
+        });
     }
 
     const checkBoard = function(){
@@ -56,15 +76,19 @@ const Board = (function(){
     }
 
     return {
-        createBoard, 
         checkBoard, 
-        changeSymbol
+        changeSymbol,
+        modifyBoard,
+        locate, 
+        board_splice, 
+        RenderBoard, 
+        empty
     }
 })();
 
 const Player = function(name, symbol){
     let winState = false;
-    
+
     const getWinState = () => {
         return winState;
     }
@@ -77,46 +101,72 @@ const Player = function(name, symbol){
 };
 
 const gameController = (function(){
-    let playerWon = false;
-    let roundCounter = 1;
-    let turn = ""; //Placeholder
-    const checkBoard = Board.checkBoard;
+    let round = 0;
+    let playerOne = new Player('K', 'X');
+    let playerTwo = new Player('S', '0');
+    let squares = document.querySelectorAll('.square');
+    let winState = false;
 
-    let playerOne = Player('Krish', 'O');
-    let playerTwo = Player('Yash', 'X');
-    
-    const choosePlayer = function(){
-        if(roundCounter % 2 == 1){
-            turn = "Player One";
+    const changePlayer = function(){
+        if(round % 2 == 0){
+            currentPlayer = playerOne;
         }
         else{
-            turn = "Player Two";
+            currentPlayer = playerTwo;
         }
     }
 
-    const playGame = function(){
-        while(!playerWon){
-            choosePlayer();
+    const createBoard = function(){
+        Board.changeSymbol(playerOne.symbol);
+        
+        squares.forEach((square, index) => {
+            square.addEventListener('click', () => {
+                if (!winState){
+                    let indexToFind = Board.locate(index + 1)
+                    if(indexToFind > -1){
+                        Board.board_splice(indexToFind)
+                        let row = Math.floor(index / 3);
+                        let column = index % 3;
+                        Board.modifyBoard(row, column);
+                        
+                        if (checkWinState() && Board.empty()){
+                            let footer = document.createElement('p');
+                            footer.textContent = `${currentPlayer.name} Wins!!`
+                            document.body.appendChild(footer);
+                        }
+
+                        else if(checkWinState()){
+                            let footer = document.createElement('p');
+                            footer.textContent = `Tie!!`;
+                            document.body.appendChild(footer);
+                        }
+
+                        else{
+                            console.log('hello');
+                            round++;
+                            changePlayer();
+                            Board.changeSymbol(currentPlayer.symbol);
+                        }
+                    }
+
+                    else{
+                        console.log('cant render here');
+                    }
+                }
+            });
+        })
+    }
+
+    const checkWinState = function(){
+        if (Board.checkBoard()){
+            winState = true;
+        }
+        return Board.checkBoard();
+    }
     
-            if(turn === "Player One"){
-                playerOne.editBoard(locations[random]);
-            }
-
-            else if(turn === "Player Two"){
-                playerTwo.editBoard(locations[random]);
-            }
-            
-            if(checkBoard()){
-                playerWon = true;
-                break;
-            };
-
-            roundCounter++;
-        }
-    }
     return {
-        playGame
+        createBoard
     }
 })();
 
-Board.createBoard();
+gameController.createBoard();
