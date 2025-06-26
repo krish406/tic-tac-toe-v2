@@ -7,6 +7,23 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <dialog class="select-names">
+        <form action="" class="name">
+            <table>
+                <tr>
+                    <td><label for="playerOne">Player One Name: </label></td>
+                    <td><input type="text" id = "playerOne"></td>
+                </tr>
+                <tr>
+                    <td><label for="playerTwo">Player Two Name:</label></td>
+                    <td><input type="text" id = "playerTwo"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input type="submit"></td></tr>
+            </table>
+        </form>
+    </dialog>
     <div class="page-body">
         <div class="title">Tic-Tac-Toe</div>
         <div class="game-container">
@@ -20,7 +37,9 @@
             <div class="square"></div>
             <div class="square"></div>
         </div>
-        <div class="gameplay-text"></div>
+        <div class="bottom">
+            <div class="gameplay-text"></div>
+        </div>
     </div>
     <script src = "script.js"></script>
 </body>

@@ -97,11 +97,16 @@ const Player = function(name, symbol){
 const gameController = (function(){
     let round = 0;
     let winState = false;
+
+    const modal = document.querySelector('dialog');
+    modal.showModal();
+    
     let playerOne = new Player('Krish', 'X');
     let playerTwo = new Player('Cristian', '0');
     let squares = document.querySelectorAll('.square');
     let game_text = document.querySelector('.gameplay-text');
     let currentPlayer = playerOne;
+
 
     const changePlayer = function(){
         if(round % 2 == 0){
