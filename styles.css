@@ -6,13 +6,61 @@
   margin: 0;
 }
 
-::backdrop{
+::backdrop {
   opacity: 0.75;
 }
 
-dialog{
+dialog {
   margin: auto;
+  padding: 20px;
+  border: none;
+  border-radius: 10px;
+  width: 350px;
+  background: white;
 }
+
+dialog label,
+dialog input,
+dialog button {
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 1.2rem;
+}
+
+/* Add spacing between table rows and input fields */
+table {
+  width: 100%;
+  border-spacing: 0 10px; /* adds vertical spacing between rows */
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 6px;
+  font-size: 1rem;
+}
+
+/* Button row styling */
+.button-row {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.button-row button,
+.button-row input[type="submit"] {
+  background-color: #007BFF;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.button-row button:hover,
+.button-row input[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
 
 .title{
   font-size: 70px;

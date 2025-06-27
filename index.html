@@ -8,22 +8,25 @@
 </head>
 <body>
     <dialog class="select-names">
-        <form action="" class="name">
+        <form method="dialog" class="name">
             <table>
                 <tr>
-                    <td><label for="playerOne">Player One Name: </label></td>
-                    <td><input type="text" id = "playerOne"></td>
+                    <td><label for="playerOne">Player One Name:</label></td>
+                    <td><input type="text" id="playerOne" /></td>
                 </tr>
                 <tr>
                     <td><label for="playerTwo">Player Two Name:</label></td>
-                    <td><input type="text" id = "playerTwo"></td>
+                    <td><input type="text" id="playerTwo" /></td>
                 </tr>
-                <tr>
-                    <td></td>
-                    <td><input type="submit"></td></tr>
             </table>
+
+            <div class="button-row">
+                <input type="submit" value="Submit" />
+                <button type="button">Close</button>
+            </div>
         </form>
     </dialog>
+
     <div class="page-body">
         <div class="title">Tic-Tac-Toe</div>
         <div class="game-container">

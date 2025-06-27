@@ -6,6 +6,8 @@ const Board = (function(){
     let squares = document.querySelectorAll('.square');
 
     const locate = function(index){
+        console.log(`The list of available locations is ${available_locations}`);
+        console.log(`Locate is returning ${available_locations.indexOf(index)}`)
         return available_locations.indexOf(index);
     }
 
@@ -27,13 +29,13 @@ const Board = (function(){
     }
 
     const changeSymbol = function(symbol){
-        console.log(symbol);
+        console.log(`Symbol has been changed to ${symbol}`);
         currentSymbol = symbol;
     }
     
     const modifyBoard = function(row, column){
         board[row][column] = currentSymbol;
-        console.log(board);
+        console.log(`The board is now ${board}`);
         RenderBoard();
     }
 
@@ -80,33 +82,65 @@ const Board = (function(){
     }
 })();
 
-const Player = function(name, symbol){
-    let winState = false;
+const Player = function(initialName, initialSymbol) {
+    let name = initialName;
+    let symbol = initialSymbol;
 
-    const getWinState = () => {
-        return winState;
-    }
+    const getName = () => name;
+    const getSymbol = () => symbol;
+    const changeName = (newName) => { name = newName; };
 
-    let toggleWinState = () => {
-        winState = !winState;
-    }
-
-    return {name, symbol, getWinState, toggleWinState}
+    return {
+        getName,
+        getSymbol,
+        changeName
+    };
 };
+
+const setPlayers = (function(){
+    const modal = document.querySelector('dialog');
+    modal.showModal();
+    const closeButton = document.querySelector('dialog button:nth-child(2)');
+
+    closeButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        modal.close();
+    });
+
+    let playerOneName;
+    let playerTwoName;
+
+    let playerOne = Player('Player One', 'X');
+    let playerTwo = Player('Player Two', '0');
+
+    modal.addEventListener('submit', () => {
+        playerOneName = document.querySelector('#playerOne').value || playerOne.getName();
+        playerTwoName = document.querySelector('#playerTwo').value || playerTwo.getName();
+        playerOne.changeName(playerOneName);
+        playerTwo.changeName(playerTwoName);
+        console.log(`Player one's name is ${playerOne.getName()}`);
+        console.log(`Player Two's name is ${playerTwo.getName()}`);
+        gameController.createBoard();
+    });
+
+    closeButton.addEventListener('click', () => {
+        modal.close();
+        gameController.createBoard();
+    })
+
+    return {
+        playerOne, playerTwo
+    }
+})();
 
 const gameController = (function(){
     let round = 0;
     let winState = false;
-
-    const modal = document.querySelector('dialog');
-    modal.showModal();
-    
-    let playerOne = new Player('Krish', 'X');
-    let playerTwo = new Player('Cristian', '0');
+    let playerOne = setPlayers.playerOne;
+    let playerTwo = setPlayers.playerTwo;
     let squares = document.querySelectorAll('.square');
     let game_text = document.querySelector('.gameplay-text');
     let currentPlayer = playerOne;
-
 
     const changePlayer = function(){
         if(round % 2 == 0){
@@ -119,15 +153,15 @@ const gameController = (function(){
     }
 
     const createBoard = function(){
-        game_text.textContent = `${currentPlayer.name}'s turn`;
-        Board.changeSymbol(currentPlayer.symbol);
+        game_text.textContent = `${currentPlayer.getName()}'s turn`;
+        Board.changeSymbol(currentPlayer.getSymbol());
         
         squares.forEach((square, index) => {
             square.addEventListener('click', () => {
                 if (!winState){
                     //find the square that was just clicked
                     let indexToFind = Board.locate(index + 1)
-                    
+                    console.log(`The index to find is at ${indexToFind}`);
                     //if the square hasn't been taken
                     if(indexToFind > -1){
                         
@@ -139,7 +173,7 @@ const gameController = (function(){
                         
                         //after this modification, check if there is a win or tie
                         if(checkWinState()){
-                            game_text.textContent = `${currentPlayer.name} Wins!!`
+                            game_text.textContent = `${currentPlayer.getName()} Wins!!`
                         }
 
                         else if(!Board.empty()){
@@ -150,22 +184,23 @@ const gameController = (function(){
                         else{
                             round++;
                             changePlayer();
-                            game_text.textContent = `${currentPlayer.name}'s turn`;
-                            Board.changeSymbol(currentPlayer.symbol);
+                            game_text.textContent = `${currentPlayer.getName()}'s turn`;
+                            Board.changeSymbol(currentPlayer.getSymbol());
                         }
 
                     }
 
-                    else{
-                        console.log('cant render here');
+                    else {
+                        console.log('unavailable square');
                     }
+
                 }
             });
         })
     }
 
     const checkWinState = function(){
-        if (Board.checkBoard() || !Board.empty){
+        if (Board.checkBoard() || !Board.empty()){
             winState = true;
         }
         return Board.checkBoard();
@@ -176,4 +211,3 @@ const gameController = (function(){
     }
 })();
 
-gameController.createBoard();
